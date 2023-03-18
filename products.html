@@ -67,6 +67,8 @@
               </tr>
             </tbody>
           </table>
+          <pagination :pages="page"
+          :get-data="getData"></pagination>
         </div>
         <div id="productModal" ref="productModal" class="modal fade" tabindex="-1" aria-labelledby="productModalLabel"
           aria-hidden="true">
