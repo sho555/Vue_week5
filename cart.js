@@ -1,4 +1,37 @@
-import {createApp} from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
+import {
+    createApp
+} from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
+
+//定義規則
+const {
+    defineRule,
+    Form,
+    Field,
+    ErrorMessage,
+    configure
+} = VeeValidate;
+const {
+    required,
+    email,
+    min,
+    max
+} = VeeValidateRules;
+const {
+    localize,
+    loadLocaleFromURL
+} = VeeValidateI18n;
+
+//多國語系
+loadLocaleFromURL('https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json');
+
+configure({
+    generateMessage: localize('zh_TW'),
+});
+
+defineRule('required', required);
+defineRule('email', email);
+defineRule('min', min);
+defineRule('max', max);
 
 const productModal = {
     //當id變動時，取得遠端並呈現Modal
@@ -36,7 +69,7 @@ const productModal = {
         this.modal = new bootstrap.Modal(this.$refs.modal); //監聽DOM，當Modal關閉時，要做其他事情
         this.$refs.modal.addEventListener('hidden.bs.modal', (event) => {
             this.openModal(''); // 改 ID
-          });
+        });
     }
 }
 const app = {
@@ -45,11 +78,27 @@ const app = {
             products: [],
             productId: '',
             cart: {},
+            form: {
+                user: {
+                  name: '',
+                  email: '',
+                  tel: '',
+                  address: '',
+                },
+                message: '',
+              },
             'apiUrl': "vue3-course-api.hexschool.io",
             'apiPath': 'jlhex',
+            
 
         };
 
+    },
+    components: {   //註冊元件
+        productModal,
+        VForm: Form,
+        VField: Field,
+        ErrorMessage: ErrorMessage,
     },
     methods: {
         getData() {
@@ -72,7 +121,9 @@ const app = {
                 qty
             }
             // const url = `https://${this.apiUrl}/v2/api/${this.apiPath}/cart`;
-            axios.post(`https://${this.apiUrl}/v2/api/${this.apiPath}/cart`, {data})
+            axios.post(`https://${this.apiUrl}/v2/api/${this.apiPath}/cart`, {
+                    data
+                })
                 .then((res) => {
                     this.$refs.productModal.hide();
                     this.getCarts();
@@ -99,12 +150,14 @@ const app = {
                 qty: item.qty
             };
             this.loadingItem = item.id;
-            axios.put(`https://${this.apiUrl}/v2/api/${this.apiPath}/cart/${item.id}`, {data})
+            axios.put(`https://${this.apiUrl}/v2/api/${this.apiPath}/cart/${item.id}`, {
+                    data
+                })
                 .then((res) => {
                     console.log("更新購物車", res.data)
                     this.getCarts();
                     this.loadingItem = '';
-                    
+
                 })
                 .catch((err) => {
                     console.log("can't get update Data")
@@ -124,10 +177,20 @@ const app = {
                     console.log("can't get delete Data")
                 })
         },
+        createOrder(){
+            const url = `https://${this.apiUrl}/api/${this.apiPath}/order`;
+            const order = this.form;
+            axios.post(url)
+            .then((res) => {
+                this.$refs.form/resetForm();    //重置表單
+                this.getCarts();
+            })
+            .catch((err) => {
+                console.log("can't get delete Data")
+            })
+        }
     },
-    components: {
-        productModal
-    },
+ 
     mounted() {
         this.getData();
         this.getCarts();
