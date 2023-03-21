@@ -2,11 +2,14 @@ import {
     createApp
 } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
 
-Object.keys(VeeValidateRules).forEach(rule => {
-    if(rule !== 'default'){
-      VeeValidate.defineRule(rule, VeeValidateRules[rule]);
-    }
-});
+const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
+const { required, email, min, max } = VeeValidateRules;
+const { localize, loadLocaleFromURL } = VeeValidateI18n;
+
+defineRule('required', required);
+defineRule('email', email);
+defineRule('min', min);
+defineRule('max', max);
 
 
 //多國語系
@@ -16,19 +19,6 @@ configure({
     generateMessage: localize('zh_TW'),
 });
 
-defineRule('required', required);
-defineRule('email', email);
-defineRule('min', min);
-defineRule('max', max);
-
-// 讀取外部的資源
-VeeValidateI18n.loadLocaleFromURL('./zh_TW.json');
-
-// Activate the locale
-VeeValidate.configure({
-  generateMessage: VeeValidateI18n.localize('zh_TW'),
-  validateOnInput: true, // 調整為：輸入文字時，就立即進行驗證
-});
 
 const productModal = {
     //當id變動時，取得遠端並呈現Modal
@@ -94,9 +84,9 @@ const app = {
     },
     components: {   //註冊元件
         productModal,
-        // VForm: Form,
-        // VField: Field,
-        // ErrorMessage: ErrorMessage,
+        VForm: Form,
+        VField: Field,
+        ErrorMessage: ErrorMessage,
     },
     methods: {
         getData() {
@@ -187,9 +177,7 @@ const app = {
                 console.log("can't get delete Data")
             })
         },
-        OnSubmit(){
-
-        }
+    
     },
  
     mounted() {
@@ -199,10 +187,10 @@ const app = {
 }
 
 
-app.component('VFrom', VeeValidate.Form);
-app.component('VField', VeeValidate.Field);
-app.component('ErrorMessage', VeeValidate.ErrorMessage);
+// app.component('VForm', VeeValidate.Form);
+// app.component('VField', VeeValidate.Field);
+// app.component('ErrorMessage', VeeValidate.ErrorMessage);
 
-app.mount('#app');
+// app.mount('#app');
 
-// createApp(app).mount('#app');
+createApp(app).mount('#app');
