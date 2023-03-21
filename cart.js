@@ -78,6 +78,7 @@ const app = {
             products: [],
             productId: '',
             cart: {},
+            loadingItem:'', //存id
             form: {
                 user: {
                   name: '',
